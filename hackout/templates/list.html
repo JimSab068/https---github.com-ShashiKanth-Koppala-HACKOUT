@@ -2,28 +2,24 @@
 <html>
 <head>
     <title>List</title>
-    <!-- Include jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Add Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>Generated List</h1>
-
-        <!-- Updated button with Bootstrap classes -->
-        <button id="generate-button" class="btn btn-primary">Generate Packing List</button>
+        <h1>Generated Packing List</h1>
 
         <div id="result">
             {% if my_list %}
-                <ul id="packing-list">
+                <!-- Display the packing list as an ordered list -->
+                <ol>
                     {% for item in my_list %}
                         <li>{{ item }}</li>
                     {% endfor %}
-                </ul>
-                <a href="{% url 'download_list_pdf' %}">Download List as PDF</a>
+                </ol>
+                <a href="{% url 'download_list_pdf' %}" class="btn btn-primary">Download List as PDF</a>
             {% else %}
-                <p id="no-items-message">No items in the list. Please generate the list.</p>
+                <p id="no-items-message">No items in the list. Please try again.</p>
             {% endif %}
         </div>
         <br>
@@ -34,41 +30,5 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-    {% if user.is_authenticated %}
-        <!-- Declare a JS variable to hold the URL -->
-        <script>
-            var downloadListUrl = "{% url 'download_list_pdf' %}";
-        </script>
-        <!-- AJAX script -->
-        <script>
-            $(document).ready(function(){
-                $("#generate-button").click(function(){
-                    $.ajax({
-                        type: 'GET',
-                        url: '/generate/',
-                        dataType: 'json',
-                        success: function(response){
-                            console.log(response);
-                            $("#no-items-message").remove();
-
-                            var packingListHtml = '<ul id="packing-list">';
-                            response.packing_list.forEach(function(item){
-                                packingListHtml += '<li>' + item.name + ' - Quantity: ' + item.quantity + '</li>';
-                            });
-                            packingListHtml += '</ul>';
-                            packingListHtml += '<a href="' + downloadListUrl + '">Download List as PDF</a>';
-
-                            $("#result").html(packingListHtml);
-                        },
-                        error: function(error){
-                            console.log(error);
-                            $("#result").html("<p>Failed to generate packing list.</p>");
-                        }
-                    });
-                });
-            });
-        </script>
-    {% endif %}
 </body>
 </html>

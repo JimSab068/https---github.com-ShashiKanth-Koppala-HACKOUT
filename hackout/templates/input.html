@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Details Form</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'app1/generateList.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <img src="{% static 'app1/logo.png' %}" alt="Headout Logo">
+        </div>
+        <div class="buttons">
+            <a href="{% url 'home' %}" class="button">Go to Dashboard</a>
+        </div>
+    </header>
+    <div class="form-container">
+        <h2>Trip Details</h2>
+        <form method="post" action="{% url 'generate_packing_list_api' %}">
+            {% csrf_token %}
+            <label for="destination">Destination:</label>
+            <select id="destination" name="destination">
+                <option value="paris">Paris</option>
+                <option value="beach">Beach</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+
+            <label for="season">Season:</label>
+            <select id="season" name="season">
+                <option value="summer">Summer</option>
+                <option value="winter">Winter</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+
+            <label for="withKids">Travelling with Kids:</label>
+            <div class="radio-group">
+                <input type="radio" id="withKidsYes" name="withKids" value="yes">
+                <label for="withKidsYes">Yes</label>
+                <input type="radio" id="withKidsNo" name="withKids" value="no">
+                <label for="withKidsNo">No</label>
+            </div><br><br>
+
+            <label for="seniorCitizens">Senior Citizens:</label>
+            <div class="radio-group">
+                <input type="radio" id="seniorCitizensYes" name="seniorCitizens" value="yes">
+                <label for="seniorCitizensYes">Yes</label>
+                <input type="radio" id="seniorCitizensNo" name="seniorCitizens" value="no">
+                <label for="seniorCitizensNo">No</label>
+            </div><br><br>
+
+            <label for="typeOfTravel">Type of Travel:</label>
+            <select id="typeOfTravel" name="typeOfTravel">
+                <option value="leisure">Leisure</option>
+                <option value="adventure">Adventure</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+
+            <label for="modeOfTravel">Mode of Travel:</label>
+            <select id="modeOfTravel" name="modeOfTravel">
+                <option value="airplane">Airplane</option>
+                <option value="car">Car</option>
+                <!-- Add more options as needed -->
+            </select><br><br>
+
+            <label for="activities">List of Activities</label>
+            <textarea id="activities" name="activities" rows="4" cols="50"></textarea><br><br>
+
+            <button type="submit" class="button">Generate List</button>
+        </form>
+    </div>
+</body>
+</html>

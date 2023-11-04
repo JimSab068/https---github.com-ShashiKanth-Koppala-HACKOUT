@@ -1,23 +1,20 @@
-# app1/views.py
+# views.py
 
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from io import BytesIO
-# Function to generate a packing list
-def get_packing_list(request):
-    # For simplicity, we are returning a static list here.
-    # You can replace this with a call to an external API or some other logic.
-    return ["Passport", "Tickets", "Clothes", "Charger", "Toiletries"]
+import os
 
-@login_required(login_url='login')
-def HomePage(request):
-    return render(request, 'home.html')
+def LandingPage(request):
+    return render(request, 'landing.html')
+
+def InputPage(request):
+    return render(request, 'input.html')
 
 def SignupPage(request):
     if request.method == 'POST':
@@ -46,39 +43,61 @@ def LoginPage(request):
             return HttpResponse("Username or Password is incorrect!!!")
     return render(request, 'login.html')
 
+@login_required(login_url='login')
+def HomePage(request):
+    return render(request, 'home.html')
+
 def LogoutPage(request):
     logout(request)
     return redirect('login')
 
-def generate_list(request):
-    travel_items = get_packing_list(request)
-    context = {'my_list': travel_items}
-    return render(request, 'list.html', context)
+@login_required(login_url='login')
+@login_required(login_url='login')
+def generate_packing_list_api(request):
+    if request.method == "POST":
+        destination = request.POST.get('destination')
+        season = request.POST.get('season')
+        withKids = request.POST.get('withKids')
+        seniorCitizens = request.POST.get('seniorCitizens')
+        typeOfTravel = request.POST.get('typeOfTravel')
+        modeOfTravel = request.POST.get('modeOfTravel')
+        activities = request.POST.get('activities')
+        
+        # Check if destination is None
+        if destination is None:
+            return HttpResponse("Destination not provided in POST request")
+        
+        print("Destination:", destination)  # This should print to your server console
+        
+        return redirect('list')
+    else:
+        return render(request, 'input.html')
 
+
+
+
+@login_required(login_url='login')
+def list(request):
+    packing_list = request.session.get('packing_list', [])
+    return render(request, 'list.html', {'my_list': packing_list})
+
+@login_required(login_url='login')
 def download_list_pdf(request):
+    packing_list = request.session.get('packing_list', [])
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="PackingList.pdf"'
+
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
-    travel_items = get_packing_list(request)
-    y = 750
-    for item in travel_items:
-        p.drawString(100, y, f"- {item}")
-        y -= 30
+    width, height = letter
+
+    for i, item in enumerate(packing_list, start=1):
+        p.drawString(100, height - 100 - i * 14, f"{i}. {item}")
+
     p.showPage()
     p.save()
+
     pdf = buffer.getvalue()
     buffer.close()
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="PackingList.pdf"'
+    response.write(pdf)
     return response
-
-@csrf_exempt
-def generate_packing_list_api(request):
-    if request.method == 'POST':
-        output = get_packing_list(request)
-        return JsonResponse({'output': output})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-def my_view(request):
-    # Call the function that interacts with OpenAI API.
-    packing_list = get_packing_list()
-    # Render the packing list to a template or return as HTTP response.
-    return HttpResponse(packing_list)

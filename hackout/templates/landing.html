@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headout Packing List Generator</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'app1/Styles.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <img src="{% static 'app1/logo.png' %}" alt="Headout Logo">
+        </div>
+        <div class="buttons">
+            <a href="{% url 'signup' %}" class="button">Login</a>
+            <a href="{% url 'login' %}" class="button">Start Packing</a>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="text">
+            <h1>Effortless Packing with Headout</h1>
+            <p>Prepare for your trips with ease. Create personalized packing lists based on your unique itinerary and preferences.</p>
+        </div>
+        <div class="image">
+            <img src="{% static 'app1/travel-image2.png' %}" alt="Travel Image">
+        </div>
+    </div>
+</body>
+</html>
